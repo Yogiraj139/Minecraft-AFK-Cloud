@@ -1,0 +1,5 @@
+﻿{
+  "provider": "node",
+  "buildCommand": "npm install",
+  "startCommand": "npm start"
+}
