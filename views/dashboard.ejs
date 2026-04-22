@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/tailwind.css">
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/socket.io/socket.io.js"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body class="app-body">
+  <header class="topbar">
+    <div class="brand-lockup">
+      <span class="brand-mark">CX</span>
+      <div>
+        <p class="eyebrow">CloudAFK Pro X</p>
+        <h1>Dashboard</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span id="connectionBadge" class="status-pill offline">Offline</span>
+      <form action="/logout" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button class="btn btn-ghost" type="submit">Sign Out</button>
+      </form>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    <section class="panel status-panel">
+      <div class="panel-title">
+        <div>
+          <p class="eyebrow">Runtime</p>
+          <h2 id="statusTitle">Offline</h2>
+        </div>
+        <div class="control-row">
+          <button class="btn btn-primary" data-action="start">Start</button>
+          <button class="btn btn-danger" data-action="stop">Stop</button>
+          <button class="btn btn-secondary" data-action="restart">Restart</button>
+          <button class="btn btn-secondary" data-action="reconnect">Reconnect</button>
+          <button class="btn btn-ghost danger-text" data-action="kill">Kill</button>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <article class="metric">
+          <span>Server</span>
+          <strong id="metricServer">--</strong>
+        </article>
+        <article class="metric">
+          <span>Username</span>
+          <strong id="metricUsername">--</strong>
+        </article>
+        <article class="metric">
+          <span>World</span>
+          <strong id="metricDimension">--</strong>
+        </article>
+        <article class="metric">
+          <span>Ping</span>
+          <strong id="metricPing">--</strong>
+        </article>
+        <article class="metric">
+          <span>TPS</span>
+          <strong id="metricTps">--</strong>
+        </article>
+        <article class="metric">
+          <span>Uptime</span>
+          <strong id="metricUptime">--</strong>
+        </article>
+        <article class="metric">
+          <span>Memory</span>
+          <strong id="metricMemory">--</strong>
+        </article>
+        <article class="metric">
+          <span>CPU</span>
+          <strong id="metricCpu">--</strong>
+        </article>
+      </div>
+
+      <div class="disconnect-line">
+        <span>Last disconnect</span>
+        <strong id="lastDisconnect">None</strong>
+      </div>
+    </section>
+
+    <section class="panel profile-panel">
+      <div class="panel-title compact">
+        <div>
+          <p class="eyebrow">Profiles</p>
+          <h2>Connection</h2>
+        </div>
+        <select id="profileSelect" class="field compact-field"></select>
+      </div>
+
+      <form id="profileForm" class="form-grid">
+        <input type="hidden" name="id">
+        <label>
+          <span>Profile</span>
+          <input name="name" placeholder="BananaSMP" required>
+        </label>
+        <label>
+          <span>Server IP</span>
+          <input name="host" placeholder="play.example.net" required>
+        </label>
+        <label>
+          <span>Port</span>
+          <input name="port" type="number" min="1" max="65535" value="25565" required>
+        </label>
+        <label>
+          <span>Username</span>
+          <input name="username" required>
+        </label>
+        <label>
+          <span>Mode</span>
+          <select name="authMode">
+            <option value="offline">Cracked / Offline</option>
+            <option value="microsoft">Premium / Microsoft</option>
+          </select>
+        </label>
+        <label>
+          <span>Minecraft Password</span>
+          <input name="minecraftPassword" type="password" autocomplete="off">
+        </label>
+        <label>
+          <span>AuthMe Password</span>
+          <input name="serverAuthPassword" type="password" autocomplete="off">
+        </label>
+        <label>
+          <span>Version</span>
+          <input name="version" value="auto">
+        </label>
+        <label class="wide">
+          <span>Version Fallbacks</span>
+          <textarea name="versionFallbacks" rows="2"><%= versionFallbacks.join('\n') %></textarea>
+        </label>
+        <label>
+          <span>Reconnect Delay</span>
+          <input name="reconnectDelayMs" type="number" min="5000" step="1000" value="15000">
+        </label>
+        <label>
+          <span>Spawn Timeout</span>
+          <input name="spawnTimeoutMs" type="number" min="10000" step="1000" value="45000">
+        </label>
+        <label>
+          <span>Login Timeout</span>
+          <input name="loginTimeoutMs" type="number" min="8000" step="1000" value="15000">
+        </label>
+        <label>
+          <span>Proxy Mode</span>
+          <select name="proxyMode">
+            <option value="disabled">Disabled</option>
+            <option value="fixed">Fixed</option>
+            <option value="rotate">Rotate</option>
+          </select>
+        </label>
+        <label>
+          <span>Proxy</span>
+          <select name="proxyId" id="proxySelect">
+            <option value="">None</option>
+          </select>
+        </label>
+        <label>
+          <span>AFK Preset</span>
+          <select name="afkProfile">
+            <% afkPresets.forEach((preset) => { %>
+              <option value="<%= preset %>"><%= preset %></option>
+            <% }) %>
+          </select>
+        </label>
+        <label>
+          <span>Scheduled Start</span>
+          <input name="scheduledStart" type="time">
+        </label>
+        <label>
+          <span>Daily Restart</span>
+          <input name="dailyRestartTime" type="time">
+        </label>
+        <label>
+          <span>Reconnect Hours</span>
+          <input name="reconnectEveryHours" type="number" min="0" step="1" value="0">
+        </label>
+        <label class="wide">
+          <span>AFK Config JSON</span>
+          <textarea name="afkConfigJson" rows="3">{}</textarea>
+        </label>
+        <label class="wide">
+          <span>Timed Messages</span>
+          <textarea name="timedMessages" rows="3"></textarea>
+        </label>
+        <label class="wide">
+          <span>Macro Commands</span>
+          <textarea name="macroCommands" rows="3"></textarea>
+        </label>
+        <div class="form-actions wide">
+          <button class="btn btn-primary" type="submit">Save Settings</button>
+          <button class="btn btn-secondary" type="button" id="newProfileBtn">New Profile</button>
+          <button class="btn btn-secondary" type="button" id="duplicateProfileBtn">Duplicate</button>
+          <button class="btn btn-ghost danger-text" type="button" id="deleteProfileBtn">Delete</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel console-panel">
+      <div class="panel-title compact">
+        <div>
+          <p class="eyebrow">Live Console</p>
+          <h2>Logs</h2>
+        </div>
+        <button class="btn btn-secondary" id="clearConsoleBtn" type="button">Clear</button>
+      </div>
+      <div id="logConsole" class="log-console" aria-live="polite"></div>
+    </section>
+
+    <section class="panel chat-panel">
+      <div class="panel-title compact">
+        <div>
+          <p class="eyebrow">Command Center</p>
+          <h2>Chat</h2>
+        </div>
+      </div>
+      <form id="chatForm" class="inline-form">
+        <input name="message" placeholder="Message">
+        <button class="btn btn-primary" type="submit">Send</button>
+      </form>
+      <form id="commandForm" class="inline-form">
+        <input name="command" placeholder="/command">
+        <button class="btn btn-secondary" type="submit">Run</button>
+      </form>
+      <button class="btn btn-secondary full-width" id="runMacroBtn" type="button">Run Saved Macro</button>
+    </section>
+
+    <section class="panel proxy-panel">
+      <div class="panel-title compact">
+        <div>
+          <p class="eyebrow">Proxy System</p>
+          <h2>Rotation</h2>
+        </div>
+      </div>
+      <form id="proxyImportForm">
+        <textarea name="proxies" rows="5"></textarea>
+        <button class="btn btn-primary full-width" type="submit">Import Proxies</button>
+      </form>
+      <div id="proxyList" class="proxy-list"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+</body>
+</html>
