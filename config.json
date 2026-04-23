@@ -1,0 +1,14 @@
+{
+  "versionFallbacks": ["1.21.11", "1.21.9", "1.21.8", "1.21.6", "1.21.5", "1.21.4", "1.20.6", "1.20.4", "1.19.4", "1.18.2", "1.16.5", "1.12.2"],
+  "defaults": {
+    "reconnectDelayMs": 15000,
+    "spawnTimeoutMs": 45000,
+    "loginTimeoutMs": 15000
+  },
+  "afkPresets": {
+    "passive": { "lookEveryMs": [12000, 28000], "jumpChance": 0.05, "sneakChance": 0.02, "moveChance": 0.04, "moveMs": [250, 900] },
+    "minimal": { "lookEveryMs": [25000, 55000], "jumpChance": 0.01, "sneakChance": 0, "moveChance": 0.01, "moveMs": [150, 400] },
+    "human-like": { "lookEveryMs": [5000, 18000], "jumpChance": 0.12, "sneakChance": 0.06, "moveChance": 0.11, "moveMs": [300, 1300] },
+    "anti-kick": { "lookEveryMs": [2500, 8500], "jumpChance": 0.22, "sneakChance": 0.12, "moveChance": 0.2, "moveMs": [400, 1800] }
+  }
+}

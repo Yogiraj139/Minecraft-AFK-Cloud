@@ -1,0 +1,30 @@
+{
+  "name": "minecraft-afk-cloud",
+  "version": "1.0.0",
+  "description": "CloudAFK Pro X - production Minecraft AFK cloud dashboard",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "check": "node --check index.js && node --check routes/api.js && node --check routes/auth.js && node --check routes/dashboard.js && node --check services/afkEngine.js && node --check services/authLogin.js && node --check services/config.js && node --check services/crypto.js && node --check services/database.js && node --check services/discordBridge.js && node --check services/logger.js && node --check services/minecraftBotManager.js && node --check services/proxyManager.js && node --check services/scheduler.js && node --check services/sqliteSessionStore.js && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "express-session": "^1.18.2",
+    "helmet": "^8.1.0",
+    "lowdb": "^7.0.1",
+    "minecraft-data": "^3.98.0",
+    "minecraft-protocol": "^1.62.0",
+    "mineflayer": "^4.36.0",
+    "socket.io": "^4.8.1",
+    "socks": "^2.8.7"
+  }
+}
